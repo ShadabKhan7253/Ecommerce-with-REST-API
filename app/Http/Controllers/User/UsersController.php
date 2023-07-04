@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Nette\Utils\Json;
 
 class UsersController extends Controller
 {
@@ -14,7 +16,8 @@ class UsersController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+        return response()->json(['data' => $users],200);
     }
 
     /**
@@ -35,7 +38,22 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'name' => 'required',
+            'password' => 'required|min:8|max:255|confirmed',
+            'email' => 'required|email|unique:users',
+        ];
+        $this->validate($request,$rules);
+
+        $data = $request->all();
+        $data['password'] = bcrypt($request->password);
+        $data['verified'] = User::UNVERIFIED_USER;
+        $data['verification_token'] = User::generateVerificationToken();
+        $data['admin'] = User::REGULAR_USER;
+
+        $user = User::create($data);
+
+        return response()->json(['data' => $user],201);
     }
 
     /**
@@ -44,9 +62,9 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-        //
+        return response()->json(['data' => $user],200);
     }
 
     /**
@@ -67,9 +85,44 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        //
+        $rules = [
+            'email' => 'email|unique:users,email,'.$user->id,
+            'password' => 'min:8|max:255|confirmed',
+            'admin' => 'in: '.User::REGULAR_USER . ', ' . User::ADMIN_USER,
+        ];
+
+        $this->validate($request,$rules);
+
+        if($request->has('name')) {
+            $user->name = $request->name;
+        }
+
+        if($request->has('email')) {
+            $user->email = $request->email;
+            $user->verified = User::UNVERIFIED_USER;
+            $user->verification_token = User::generateVerificationToken();
+        }
+
+        if($request->has('password')) {
+            $user->password = bcrypt($request->password);
+        }
+
+        if($request->has('admin')) {
+            if($user->isVerified()) {
+                return response()->json(['error'=> 'only verified users can modify the admin field'],409);
+            }
+        }
+
+        if(!$user->isDirty()) {
+            return response()->json(['error'=> 'You need to specify a different value'],422);
+        }
+
+        $user->save();
+
+        return response()->json(['data'=> $user],200);
+
     }
 
     /**
@@ -78,8 +131,10 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+
+        return response()->json(['data' => $user],200);
     }
 }
