@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // 2. Seed the database using Factories
-        $numOfUsers = 200;
+        $numOfUsers = 1000;
         $numOfCategories = 30;
         $numOfProducts = 1000;
         $numOfTransactions = 1000;
