@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('buyer_id');
             $table->unsignedBigInteger('product_id');
             $table->unsignedInteger('quantity');
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('buyer_id')
