@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Nette\Utils\Json;
 
-class UsersController extends Controller
+class UsersController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +18,7 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::all();
-        return response()->json(['data' => $users],200);
+        return $this->showAll($users);
     }
 
     /**
@@ -53,7 +54,7 @@ class UsersController extends Controller
 
         $user = User::create($data);
 
-        return response()->json(['data' => $user],201);
+        return $this->showOne($user,201);
     }
 
     /**
@@ -64,7 +65,7 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        return response()->json(['data' => $user],200);
+        return $this->showOne($user);;
     }
 
     /**
@@ -121,7 +122,7 @@ class UsersController extends Controller
 
         $user->save();
 
-        return response()->json(['data'=> $user],200);
+        return $this->showOne($user);;
 
     }
 
@@ -135,6 +136,6 @@ class UsersController extends Controller
     {
         $user->delete();
 
-        return response()->json(['data' => $user],200);
+        return $this->showOne(new User(),204);;
     }
 }
