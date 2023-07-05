@@ -88,8 +88,11 @@ class Handler extends ExceptionHandler
         if($e instanceof HttpException) {
             return $this->errorResponse($e->getMessage(),$e->getStatusCode());
         }
-        return parent::render($request,$e);
 
+        if(config('app.debug')) {
+            return parent::render($request,$e);
+        }
+        return $this->errorResponse("Some Server ErrorOccured",500);
     }
 
     protected function convertValidationExceptionToResponse(ValidationValidationException $e, $request)
