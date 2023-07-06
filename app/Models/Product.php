@@ -26,6 +26,8 @@ class Product extends Model
         return $this->status === self::AVAILABLE_PRODUCT;
     }
 
+    protected $hidden = ['pivot'];
+
     public function categories()
     {
         return $this->belongsToMany(Category::class);
