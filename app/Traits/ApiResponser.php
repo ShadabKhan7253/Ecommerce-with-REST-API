@@ -2,7 +2,6 @@
 
 namespace App\Traits;
 
-use GuzzleHttp\RetryMiddleware;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
