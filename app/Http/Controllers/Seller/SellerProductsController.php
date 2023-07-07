@@ -76,7 +76,7 @@ class SellerProductsController extends ApiController
     public function destroy(Seller $seller, Product $product)
     {
         $this->validateSeller($seller, $product);
-        Storage::delete($product->image);
+        // Storage::delete($product->image);
         $product->delete();
         return $this->showOne(new Product(), 204);
     }

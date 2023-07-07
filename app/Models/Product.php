@@ -28,6 +28,17 @@ class Product extends Model
 
     protected $hidden = ['pivot'];
 
+    public static function boot()
+    {
+        parent::boot();
+        self::updated(function (Product $product) {
+            if($product->qunatity === 0 && $product->isAvailable()) {
+                $product->status = self::UNAVAILABLE_PRODUCT;
+                $product->save();
+            }
+        });
+    }
+
     public function categories()
     {
         return $this->belongsToMany(Category::class);
