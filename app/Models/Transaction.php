@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Transaction extends Model
 {
     use HasFactory,SoftDeletes;
+
+    protected $fillable = [
+        'product_id',
+        'buyer_id',
+        'quantity',
+    ];
     public function buyer()
     {
         return $this->belongsTo(Buyer::class);
